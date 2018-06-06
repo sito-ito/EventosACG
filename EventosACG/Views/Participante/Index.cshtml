@@ -1,0 +1,122 @@
+﻿@model IEnumerable<EventosACG.Models.Participante>
+
+@{
+    ViewBag.Title = "Participantes en el evento:";
+}
+
+<h2>Listados Participantes</h2>
+
+@*Buscador*@
+
+@using (Html.BeginForm("Index", "Participante", new { eventoID = @ViewBag.eventoID }, FormMethod.Post, null))
+{
+    @*<input type="hidden" id="idEvento" value="@ViewBag.eventoID" />*@
+    //the following are search options
+    <b> Opción Busqueda: </b>
+    @Html.RadioButton("option", "Nombre") <text>Nombre</text> 
+    @Html.RadioButton("option", "Apellidos") <text> Apellidos </text>
+    @Html.RadioButton("option", "Puesto")<text>Puesto</text> 
+    @Html.TextBox("busqueda")
+    <input type="submit" name="submit" value="Filtrar" />
+}
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Evento.Nombre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Persona.Nombre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Persona.Apellido)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Persona.Parroquia)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Persona.Sexo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Puesto)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Observacion)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Autobus)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Pagado)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Documentacion)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Evento.Nombre)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Persona.Nombre)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Persona.Apellido)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Persona.Parroquia.Nombre)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Persona.Sexo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Puesto)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Observacion)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Autobus)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Pagado)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Documentacion)
+        </td>
+        <td>
+            @Html.ActionLink("Cambiar", "Edit", new { id = item.ParticipanteID, idEvento = item.EventoID }) |
+            @*@Html.ActionLink("Details", "Details", new { id = item.ParticipanteID }) |*@
+            @Html.ActionLink("Borrar", "Delete", new { id = item.ParticipanteID })
+        </td>
+    </tr>
+    }
+
+</table>
+<div class="row">
+    <div class="col-md-4">
+        <label>Número de participantes: @ViewBag.ParticipantesCount</label> 
+
+    </div>
+    <div class="col-lg-8">
+        <a href="@Url.Action("ExportToExcel", new { idEvento = ViewBag.EventoID })" class="btn btn-primary">Guardar en Excel</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-mod-12">
+        @if (ViewBag.eventoID > 0)
+        {
+            @Html.ActionLink("Volver al Evento", "Details", "Evento", new { id = ViewBag.EventoID }, null)
+        }
+        else
+        {
+            @Html.ActionLink("Volver al Evento", "Index", "Evento")
+        }
+    </div>
+</div>
+

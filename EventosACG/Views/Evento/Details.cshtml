@@ -1,0 +1,448 @@
+﻿@model EventosACG.Models.Evento
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<script type="text/javascript">
+
+    function PuestosParticipantes() {
+        $.ajax({
+            type: "POST",
+            url: "/Evento/PuestosParticipantes",
+            data: '{ }',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                $("#PuestoParticipacion").empty().append('<option selected="selected" value="none">Selecciona</option>');
+                $.each(data, function () {
+                    $("#PuestoParticipacion").append($("<option></option>").val(this['Value']).html(this['Text']));
+                });
+            },
+            failure: function () {
+                alert("Failed!");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $("#NombreCompleto").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Evento/Index",
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            //El campo value los pongo como vvalue para que al moverme por los
+                            //elementos no cambie el texto por el valor
+                            return { label: item.NombreCompleto, vvalue: item.ID };
+                        }))
+
+                    }
+                })
+            },
+            select: function (event, ui) {
+                event.preventDefault();
+                //alert(ui.item.vvalue);
+                $("#IdPersonaSeleccionada").val(ui.item.vvalue);
+            },
+            messages: {
+                noResults: "", results: function (resultsCount) { }
+            }
+        });
+
+        PuestosParticipantes();
+
+        $("#LimpiarDatosPersona").click(function () {
+            $("#IdPersonaSeleccionada").val('');
+            $("#NombreCompleto").val('');
+            $("#NombrePersona").val('');
+            $("#ApellidoPersona").val('');
+            $("#DNIPersona").val('');
+            $("#SexoPersona").val('');
+            $("#FechaNacimientoPersona").val('');
+            $("#TelefonoPersona").val('');
+            $("#EnfermedadPersona").val('');
+            $("#AlergiaPersona").val('');
+            $("#PuestoParticipacion").val(0)
+            $("#ObservacionesPartipacion").val('');
+        });
+
+        //Obtener Datos Persona
+        $("#RellenarDatosPersona").click(function () {
+            //e.preventDefault();
+            $.ajax({
+                url: "/Evento/ObtenerDatosPersona",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    idPersona: $("#IdPersonaSeleccionada").val(),
+                    nombreCompletoPersona: $("#NombreCompleto").val()
+                },
+                success: function (data) {
+                    //alert(data);
+                    $("#NombrePersona").val(data.Nombre);
+                    $("#ApellidoPersona").val(data.Apellido);
+                    $("#DNIPersona").val(data.Dni);
+                    var returnVariable = data.Fechanacimiento;
+                    var d = new Date(parseFloat(returnVariable.replace("/Date(", "").replace(")/", "")));
+                    var day = d.getDate();
+                    var month = d.getUTCMonth() + 1;
+                    var year = d.getFullYear();
+                    //console.log(day + "/" + ("0" + (month)) + "/" + year);
+                    $("#FechaNacimientoPersona").val(day + "/" + (month) + "/" + year);
+                    $("#TelefonoPersona").val(data.Telefono);
+                    $("#EnfermedadPersona").val(data.Enfermedad);
+                    $("#AlergiaPersona").val(data.Alergia);
+                    $("#SexoPersona").val(data.SexoPersona);
+                    $("#ParroquiaID").val(data.ParroquiaID);
+                    $("#IdPersonaSeleccionada").val(data.PersonaId)
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus);
+                }
+            })
+        });
+
+        $("#InsertarPersonaEvento").click(function () {
+            if ('none' == $("#PuestoParticipacion").val()) {
+                alert("Debe de seleccionar un puesto");
+            }
+            else {
+                if ($("#IdPersonaSeleccionada").val().length > 0) {
+                    //metodo de inserción en el evento segun el id de la persona
+                    $.ajax({
+                        url: "/Evento/InsertarPersonaEventoById",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            idPersona: $("#IdPersonaSeleccionada").val(),
+                            idEvento: $("#IdEvento").val(),
+                            puesto: $("#PuestoParticipacion").val(),
+                            observacion: $("#ObservacionesPartipacion").val(),
+                            bAutobus: $('#AutobusParticipacion').is(":checked"),
+                            bPagado: $('#PagadoParticipacion').is(":checked"),
+                            bDocumentacion: $('#DocumentacionParticipacion').is(":checked")
+                        },
+                        cache: false,
+                        async: true,
+                        success: function (data) {
+                            $("#IdPersonaSeleccionada").val('');
+                            $("#NombreCompleto").val('');
+                            $("#NombrePersona").val('');
+                            $("#ApellidoPersona").val('');
+                            $("#DNIPersona").val('');
+                            $("#SexoPersona").val('');
+                            $("#FechaNacimientoPersona").val('');
+                            $("#TelefonoPersona").val('');
+                            $("#EnfermedadPersona").val('');
+                            $("#AlergiaPersona").val('');
+                            $("#PuestoParticipacion").val(0)
+                            $("#ObservacionesPartipacion").val('');
+
+                            if (data.success) {
+                                alert(data.responseText);
+
+                            } else {
+                                // DoSomethingElse()
+                                alert(data.responseText);
+                            }
+
+                            location.reload();
+
+                        }
+
+                    })
+                }
+                else {
+                    //la persona es nueve por lo que creo la persona y la inserto en el evento
+                    $.ajax({
+                        url: "/Evento/AñadirPersonaEventoByDatos",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            nombre: $("#NombrePersona").val(),
+                            apellido: $("#ApellidoPersona").val(),
+                            dni: $("#DNIPersona").val(),
+                            sexo: $("#SexoPersona").val(),
+                            fechanacimiento: $("#FechaNacimientoPersona").val(),
+                            telefono: $("#TelefonoPersona").val(),
+                            enfermedad: $("#EnfermedadPersona").val(),
+                            alergia: $("#AlergiaPersona").val(),
+                            idEvento: $("#IdEvento").val(),
+                            parroquiaID: $("#ParroquiaID").val(),
+                            puesto: $("#PuestoParticipacion").val(),
+                            observacion: $("#ObservacionesPartipacion").val(),
+                            bAutobus: $('#AutobusParticipacion').is(":checked"),
+                            bPagado: $('#PagadoParticipacion').is(":checked"),
+                            bDocumentacion: $('#DocumentacionParticipacion').is(":checked")
+                        },
+                        cache: false,
+                        async: true,
+                        success: function (data) {
+                            $("#IdPersonaSeleccionada").val('');
+                            $("#NombreCompleto").val('');
+                            $("#NombrePersona").val('');
+                            $("#ApellidoPersona").val('');
+                            $("#DNIPersona").val('');
+                            $("#SexoPersona").val('');
+                            $("#FechaNacimientoPersona").val('');
+                            $("#TelefonoPersona").val('');
+                            $("#EnfermedadPersona").val('');
+                            $("#AlergiaPersona").val('');
+                            $("#PuestoParticipacion").val(0)
+                            $("#ObservacionesPartipacion").val('');
+
+                            if (data.success) {
+                                alert(data.responseText);
+
+                            } else {
+                                // DoSomethingElse()
+                                alert(data.responseText);
+                            }
+
+                            location.reload();
+
+                        }
+                    })
+
+                }
+            }
+
+        });
+
+    });
+
+
+
+</script>
+
+<h2>Details</h2>
+<input type="hidden" id="IdEvento" value="@ViewBag.IdEvento" />
+<div>
+    <h4>Evento</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Lugar)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Lugar)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha)
+        </dd>
+
+    </dl>
+</div>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+
+    <hr />
+
+    <div class="form-group">
+
+        <div class="col-md-4">
+            <label>Persona: </label>
+            <input type="text" class="form-control" name="search" id="NombreCompleto" />
+            <input type="hidden" id="IdPersonaSeleccionada" />
+        </div>
+        <div class="col-md-5">
+            <button type="button" class="btn btn-primary" id="RellenarDatosPersona">Rellenar Datos Persona</button>
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-default" id="LimpiarDatosPersona">Limpiar Datos</button>
+        </div>
+
+    </div>
+
+    <hr class="hr-divider">
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Apellidos</label>
+        <div class="col-md-3">
+            <input type="text" class="form-control col-md-3" name="ApellidoPersona" id="ApellidoPersona" />
+        </div>
+        <label class="control-label col-md-2">Nombre</label>
+        <div class="col-md-3">
+            <input type="text" class="form-control col-md-3" name="NombrePersona" id="NombrePersona" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Parroquia</label>
+        <div class="col-md-10">
+            @Html.DropDownList("ParroquiaID", null, htmlAttributes: new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">DNI</label>
+        <div class="col-md-3">
+            <input type="text" class="form-control col-md-3" name="DNIPersona" id="DNIPersona" />
+        </div>
+        <label class="control-label col-md-2">Fecha Nacimiento</label>
+        <div class="col-md-3">
+            <input type="text" class="form-control col-md-3" name="FechaNacimientoPersona" id="FechaNacimientoPersona" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Sexo</label>
+        <div class="col-md-4">
+            @*<input type="text" class="form-control col-md-3" name="SexoPersona" id="SexoPersona" />*@
+            @Html.DropDownList("SexoPersona", (IEnumerable<SelectListItem>)ViewBag.Sex, "", htmlAttributes: new { @class = "control-label col-md-4", id = "SexoPersona" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Teléfono</label>
+        <div class="col-md-3">
+            <input type="text" class="form-control col-md-3" name="TelefonoPersona" id="TelefonoPersona" />
+           
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Enfermedades</label>
+        <div class="col-md-3">
+            <textarea type="text" class="form-control col-md-3" name="EnfermedadPersona" id="EnfermedadPersona">
+            </textarea>
+        </div>
+        <label class="control-label col-md-2">Alergias</label>
+        <div class="col-md-3">
+            <textarea type="text" class="form-control col-md-3" name="AlergiaPersona" id="AlergiaPersona">
+            </textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Puesto</label>
+        <select class="form-control col-md-3" id="PuestoParticipacion"></select>
+        <label class="control-label col-md-2">Observaciones</label>
+        <div class="col-md-3">
+            <textarea type="text" class="form-control col-md-3" name="ObservacionesPartipacion" id="ObservacionesPartipacion">
+            </textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="checkbox-inline"><input type="checkbox" value="" id="AutobusParticipacion">Autobus</label>
+        <label class="checkbox-inline"><input type="checkbox" value="" id="PagadoParticipacion">Pagado</label>
+        <label class="checkbox-inline"><input type="checkbox" value="" id="DocumentacionParticipacion">Documetación</label>
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" id="InsertarPersonaEvento">Insertar</button>
+        </div>
+    </div>
+
+
+
+</div>
+}
+
+<hr class="hr-divider">
+<p>
+<p>
+    @Html.ActionLink("Participantes del Evento ", "Index", "Participante", new { eventoID = @ViewBag.IdEvento }, null)
+</p>
+
+@if (Model.Participantes != null)
+{
+    string frase = "";
+    if (!string.IsNullOrEmpty(ViewBag.parroquiaUsuario))
+    {
+        frase = "(De la parroquia= " + ViewBag.parroquiaUsuario + " )";
+    }
+
+    <h3>Participantes en este Evento @frase</h3>
+
+    <table class="table">
+        <tr>
+            @*<th></th>*@
+
+            <th>Nombre</th>
+            <th>Apellidos</th>
+            <th>Parroquia</th>
+            <th>Puesto</th>
+            <th>Enfermedad</th>
+            <th>Alergia</th>
+            <th>Observaciones</th>
+
+        </tr>
+
+        @foreach (var participante in Model.Participantes)
+        {
+            if (string.IsNullOrEmpty(ViewBag.parroquiaUsuario) || ViewBag.parroquiaUsuario == participante.Persona.Parroquia.Nombre.ToLower())
+            {
+                string selectedRow = "";
+                if (participante.ParticipanteID == ViewBag.ParticipanteID)
+                {
+                    selectedRow = "success";
+                }
+                <tr class="@selectedRow">
+                    @*<td>
+                            @Html.ActionLink("Select", "Index", new { eventoID = participante.ParticipanteID })
+                        </td>*@
+
+                    <td>
+                        @participante.Persona.Nombre
+                    </td>
+                    <td>
+                        @participante.Persona.Apellido
+                    </td>
+                    <td>
+                        @participante.Persona.Parroquia.Nombre
+                    </td>
+                    <td>
+                        @participante.Puesto
+                    </td>
+                    <td>
+                        @participante.Persona.Enfermedad
+                    </td>
+                    <td>
+                        @participante.Persona.Alergia
+                    </td>
+                    <td>
+                        @participante.Observacion
+                    </td>
+                </tr>
+            }
+        }
+
+
+
+    </table>
+}
+
+<p>
+    @Html.ActionLink("Participantes del Evento ", "Index", "Participante", new { eventoID = @ViewBag.IdEvento }, null) |
+    @*@Html.ActionLink("Participantes", "Index", "Participante", new { id = Model.ID }, null) |*@
+    @*@Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |*@
+    @Html.ActionLink("Volver", "Index")
+</p>

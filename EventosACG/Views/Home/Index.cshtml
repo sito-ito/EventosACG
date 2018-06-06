@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "EVENTOS ACG - Málaga";
+}
+
+<div class="jumbotron">
+    <h1>Eventos ACG</h1>
+    <p class="lead">Herramienta web para la gestión de eventos de la ACG en Málaga.</p>
+    <p><a href="http://acg.diocesismalaga.es/" target="_blank" class="btn btn-primary btn-lg"     white-space: normal;>Saber más de la Accion Católica en Málaga </a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Para Empezar</h2>
+        <p>
+            Para empzar crea un EVENTO.
+            Luego añade participantes al evento.
+        </p>
+       
+        <p> @Html.ActionLink("Eventos", "Index", new { controller = "Evento" }, new { @class = "btn btn-primary" }) </p>
+
+    </div >
+    <div class="col-md-4">
+            <h2>Dar de alta Personas</h2>
+            <p>En este apartado podreis dar de alta personas que participan en los eventos.</p>
+            <p> @Html.ActionLink("Personas", "Index", new { controller = "Persona" }, new { @class = "btn btn-primary" }) </p>
+
+    </div>
+
+    <div class="col-md-4">
+    </div>
+           
+</div>

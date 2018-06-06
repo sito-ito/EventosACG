@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventosACG", "EventosACG\EventosACG.csproj", "{CF48B87F-1820-4000-A41E-92D43ADDFB0E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF48B87F-1820-4000-A41E-92D43ADDFB0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF48B87F-1820-4000-A41E-92D43ADDFB0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF48B87F-1820-4000-A41E-92D43ADDFB0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF48B87F-1820-4000-A41E-92D43ADDFB0E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E211DDAA-B68D-4268-BFBA-985F360A4687}
+	EndGlobalSection
+EndGlobal

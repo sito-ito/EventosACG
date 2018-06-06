@@ -1,0 +1,58 @@
+﻿@model IEnumerable<EventosACG.Models.Evento>
+
+@using Microsoft.AspNet.Identity
+
+@{
+    ViewBag.Title = "Eventos";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Nuevo Evento", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Lugar)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Fecha)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lugar)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td>
+                @Html.ActionLink("Detalles", "Details", new { id = item.ID }) |
+                @if (User.Identity.GetUserName().ToUpper() == "ACGMALAGA@DIOCESISMALAGA.ES")
+                {
+                        @Html.ActionLink("Cambiar", "Edit", new { id = item.ID });
+                }
+                | 
+                @if (User.Identity.GetUserName().ToUpper() == "ACGMALAGA@DIOCESISMALAGA.ES")
+                {
+                        @Html.ActionLink("Borrar", "Delete", new { id = item.ID });
+                }
+
+                
+
+            </td>
+        </tr>
+    }
+
+</table>
