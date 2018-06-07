@@ -199,10 +199,10 @@ namespace EventosACG.Controllers
             //var participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == EventoID);
             var participantes = (from p in db.Participantes
                                 where p.EventoID == EventoID
-                                select new { Evento = p.Evento.Nombre, NombrePersona = p.Persona.Nombre , p.Persona.Apellido, p.Puesto, p.Observacion, p.Persona.Enfermedad, p.Persona.Alergia }).ToList();
+                                select new { Evento = p.Evento.Nombre, NombrePersona = p.Persona.Nombre , p.Persona.Apellido, Parroquia = p.Persona.Parroquia.Nombre, p.Puesto, p.Observacion, p.Persona.Enfermedad, p.Persona.Alergia }).ToList();
             //List < Participante > participantesList = participantes.ToList();
 
-            string[] columns = { "Evento", "NombrePersona", "Apellido", "Puesto", "NombrePuesto", "Observaciones", "Enfermedad", "Alergia" };
+            string[] columns = { "Evento", "NombrePersona", "Apellido", "Parroquia", "Puesto", "NombrePuesto", "Observaciones", "Enfermedad", "Alergia" };
             byte[] filecontent = ExcelExportHelper.ExportExcel(participantes, "Participantes", true, columns);
             return File(filecontent, ExcelExportHelper.ExcelContentType, "Participantes.xlsx");
         }
