@@ -9,6 +9,8 @@ using System.Web.Mvc;
 using EventosACG.Codigo;
 using EventosACG.DAL;
 using EventosACG.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace EventosACG.Controllers
 {
@@ -22,10 +24,22 @@ namespace EventosACG.Controllers
         {
             if (eventoID.HasValue)
             {
+                var store = new UserStore<ApplicationUser>(new ApplicationDbContext());
+                var userManager = new UserManager<ApplicationUser>(store);
+                ApplicationUser user = userManager.FindByNameAsync(User.Identity.Name).Result;
+                string parroquiaUsuario = user.Parroquia;
+
                 var participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == -1);
                 if (string.IsNullOrEmpty(option))
                 {
-                    participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID);
+                    if (string.IsNullOrEmpty(parroquiaUsuario))
+                    {
+                        participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID);
+                    }
+                    else
+                    {
+                        participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario);
+                    }
                     //ViewBag.eventoID = eventoID;
                     //return View(participantes.ToList());
 
@@ -34,27 +48,57 @@ namespace EventosACG.Controllers
                 {
                     if (string.IsNullOrEmpty(busqueda))
                     {
-                        participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID);
+                        if (string.IsNullOrEmpty(parroquiaUsuario))
+                        {
+                            participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID);
+                        }
+                        else
+                        {
+                            participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario);
+                        }
+
                         //ViewBag.eventoID = eventoID;
                         //return View(participantes.ToList());
 
                     }
                     else //existe eventoID, option y busqueda -> hago el filtro
                     {
-                        if (option == "Puesto")
+                        if (string.IsNullOrEmpty(parroquiaUsuario))
                         {
-                            participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
-                                        .Where(e => e.EventoID == eventoID && e.Puesto.ToString().StartsWith(busqueda));
+                            if (option == "Puesto")
+                            {
+                                participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
+                                            .Where(e => e.EventoID == eventoID  && e.Puesto.ToString().StartsWith(busqueda));
+                            }
+                            else if (option == "Nombre")
+                            {
+                                participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
+                                            .Where(e => e.EventoID == eventoID && e.Persona.Nombre.StartsWith(busqueda));
+                            }
+                            else if (option == "Apellidos")
+                            {
+                                participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
+                                            .Where(e => e.EventoID == eventoID && e.Persona.Apellido.StartsWith(busqueda));
+                            }
                         }
-                        else if (option == "Nombre")
+                        else
                         {
-                            participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
-                                        .Where(e => e.EventoID == eventoID && e.Persona.Nombre.StartsWith(busqueda));
-                        }
-                        else if (option == "Apellidos")
-                        {
-                            participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
-                                        .Where(e => e.EventoID == eventoID && e.Persona.Apellido.StartsWith(busqueda));
+                            if (option == "Puesto")
+                            {
+                                participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
+                                            .Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario && e.Puesto.ToString().StartsWith(busqueda));
+                            }
+                            else if (option == "Nombre")
+                            {
+                                participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
+                                            .Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario && e.Persona.Nombre.StartsWith(busqueda));
+                            }
+                            else if (option == "Apellidos")
+                            {
+                                participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
+                                            .Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario && e.Persona.Apellido.StartsWith(busqueda));
+                            }
+
                         }
 
                         //participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID);
