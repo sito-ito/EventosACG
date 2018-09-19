@@ -29,16 +29,16 @@ namespace EventosACG.Controllers
                 ApplicationUser user = userManager.FindByNameAsync(User.Identity.Name).Result;
                 string parroquiaUsuario = user.Parroquia;
 
-                var participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == -1);
+                var participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == -1).OrderBy(p => p.Persona.ParroquiaID);
                 if (string.IsNullOrEmpty(option))
                 {
                     if (string.IsNullOrEmpty(parroquiaUsuario))
                     {
-                        participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID);
+                        participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID).OrderBy(p => p.Persona.ParroquiaID);
                     }
                     else
                     {
-                        participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario);
+                        participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario).OrderBy(p => p.Persona.ParroquiaID);
                     }
                     //ViewBag.eventoID = eventoID;
                     //return View(participantes.ToList());
@@ -50,11 +50,11 @@ namespace EventosACG.Controllers
                     {
                         if (string.IsNullOrEmpty(parroquiaUsuario))
                         {
-                            participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID);
+                            participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID).OrderBy(p => p.Persona.ParroquiaID);
                         }
                         else
                         {
-                            participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario);
+                            participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario).OrderBy(p => p.Persona.ParroquiaID);
                         }
 
                         //ViewBag.eventoID = eventoID;
@@ -68,17 +68,17 @@ namespace EventosACG.Controllers
                             if (option == "Puesto")
                             {
                                 participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
-                                            .Where(e => e.EventoID == eventoID  && e.Puesto.ToString().StartsWith(busqueda));
+                                            .Where(e => e.EventoID == eventoID  && e.Puesto.ToString().StartsWith(busqueda)).OrderBy(p => p.Persona.ParroquiaID);
                             }
                             else if (option == "Nombre")
                             {
                                 participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
-                                            .Where(e => e.EventoID == eventoID && e.Persona.Nombre.StartsWith(busqueda));
+                                            .Where(e => e.EventoID == eventoID && e.Persona.Nombre.StartsWith(busqueda)).OrderBy(p => p.Persona.ParroquiaID);
                             }
                             else if (option == "Apellidos")
                             {
                                 participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
-                                            .Where(e => e.EventoID == eventoID && e.Persona.Apellido.StartsWith(busqueda));
+                                            .Where(e => e.EventoID == eventoID && e.Persona.Apellido.StartsWith(busqueda)).OrderBy(p => p.Persona.ParroquiaID);
                             }
                         }
                         else
@@ -86,17 +86,17 @@ namespace EventosACG.Controllers
                             if (option == "Puesto")
                             {
                                 participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
-                                            .Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario && e.Puesto.ToString().StartsWith(busqueda));
+                                            .Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario && e.Puesto.ToString().StartsWith(busqueda)).OrderBy(p => p.Persona.ParroquiaID);
                             }
                             else if (option == "Nombre")
                             {
                                 participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
-                                            .Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario && e.Persona.Nombre.StartsWith(busqueda));
+                                            .Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario && e.Persona.Nombre.StartsWith(busqueda)).OrderBy(p => p.Persona.ParroquiaID);
                             }
                             else if (option == "Apellidos")
                             {
                                 participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
-                                            .Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario && e.Persona.Apellido.StartsWith(busqueda));
+                                            .Where(e => e.EventoID == eventoID && e.Persona.Parroquia.Nombre == parroquiaUsuario && e.Persona.Apellido.StartsWith(busqueda)).OrderBy(p => p.Persona.ParroquiaID);
                             }
 
                         }
