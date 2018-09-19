@@ -22,10 +22,10 @@ namespace EventosACG.Controllers
         {
             if (eventoID.HasValue)
             {
-                var participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == -1);
+                var participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == -1).OrderBy(p => p.Persona.ParroquiaID);
                 if (string.IsNullOrEmpty(option))
                 {
-                    participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID);
+                    participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID).OrderBy(p => p.Persona.ParroquiaID);
                     //ViewBag.eventoID = eventoID;
                     //return View(participantes.ToList());
 
@@ -34,7 +34,7 @@ namespace EventosACG.Controllers
                 {
                     if (string.IsNullOrEmpty(busqueda))
                     {
-                        participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID);
+                        participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID).OrderBy(p => p.Persona.ParroquiaID);
                         //ViewBag.eventoID = eventoID;
                         //return View(participantes.ToList());
 
@@ -44,17 +44,17 @@ namespace EventosACG.Controllers
                         if (option == "Puesto")
                         {
                             participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
-                                        .Where(e => e.EventoID == eventoID && e.Puesto.ToString().StartsWith(busqueda));
+                                        .Where(e => e.EventoID == eventoID && e.Puesto.ToString().StartsWith(busqueda)).OrderBy(p => p.Persona.ParroquiaID); ;
                         }
                         else if (option == "Nombre")
                         {
                             participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
-                                        .Where(e => e.EventoID == eventoID && e.Persona.Nombre.StartsWith(busqueda));
+                                        .Where(e => e.EventoID == eventoID && e.Persona.Nombre.StartsWith(busqueda)).OrderBy(p => p.Persona.ParroquiaID); ;
                         }
                         else if (option == "Apellidos")
                         {
                             participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona)
-                                        .Where(e => e.EventoID == eventoID && e.Persona.Apellido.StartsWith(busqueda));
+                                        .Where(e => e.EventoID == eventoID && e.Persona.Apellido.StartsWith(busqueda)).OrderBy(p => p.Persona.ParroquiaID); ;
                         }
 
                         //participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == eventoID);
@@ -196,10 +196,11 @@ namespace EventosACG.Controllers
         public FileContentResult ExportToExcel(string idEvento)
         {
             int EventoID = Convert.ToInt32(idEvento);
+
             //var participantes = db.Participantes.Include(p => p.Evento).Include(p => p.Persona).Where(e => e.EventoID == EventoID);
             var participantes = (from p in db.Participantes
-                                where p.EventoID == EventoID
-                                select new { Evento = p.Evento.Nombre, NombrePersona = p.Persona.Nombre , p.Persona.Apellido, Parroquia = p.Persona.Parroquia.Nombre, p.Puesto, p.Observacion, p.Persona.Enfermedad, p.Persona.Alergia }).ToList();
+                            where p.EventoID == EventoID
+                            select new { Evento = p.Evento.Nombre, NombrePersona = p.Persona.Nombre , p.Persona.Apellido, Parroquia = p.Persona.Parroquia.Nombre, p.Puesto, p.Observacion, p.Persona.Enfermedad, p.Persona.Alergia }).ToList();
             //List < Participante > participantesList = participantes.ToList();
 
             string[] columns = { "Evento", "NombrePersona", "Apellido", "Parroquia", "Puesto", "NombrePuesto", "Observaciones", "Enfermedad", "Alergia" };
