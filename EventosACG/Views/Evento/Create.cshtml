@@ -48,7 +48,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Fecha, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Fecha, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Fecha, new { htmlAttributes = new { @class = "form-control datepicker" } })
                 @Html.ValidationMessageFor(model => model.Fecha, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -68,3 +68,24 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+
+<script type="text/javascript">
+
+    $(function () {
+        $(".datepicker").datetimepicker({
+            format: "DD/MM/YYYY"
+        }).on('dp.change', function (e) {
+            $(this).data('DateTimePicker').hide();
+        });
+
+        $.validator.methods.date = function (value, element) {
+            console.log(value);
+            console.log(moment(value, "DD/MM/YYYY", true).isValid());
+            console.log(this.optional(element));
+            return this.optional(element) || moment(value, "DD/MM/YYYY", true).isValid();
+        }
+
+
+    });
+
+</script>
